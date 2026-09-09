@@ -1,6 +1,8 @@
 import type { GlobalState, LCLState } from '../types'
 import { calcLCL, fmtDkk, fmtDkk2, fmtUsd } from '../calculations'
 import { NumberInput } from './NumberInput'
+import { LedgerRow } from './LedgerRow'
+import { WaybillHeader } from './WaybillHeader'
 
 interface Props {
   state: LCLState
@@ -14,11 +16,10 @@ export function OfferLCL({ state, onChange, global }: Props) {
     onChange({ ...state, [key]: value })
 
   return (
-    <div className="flex h-full flex-col rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h3 className="mb-1 text-base font-semibold text-slate-800">Tilbud 1 · Samlegods (LCL)</h3>
-      <p className="mb-3 text-xs text-slate-400">A-Line · pris pr. w/m</p>
+    <div className="border border-ink/15 bg-paper-raised p-4">
+      <WaybillHeader ref="TILBUD 2026-01" title="Samlegods" mode="LCL · pris pr. w/m" />
 
-      <div className="mb-3 divide-y divide-slate-100 rounded-lg bg-slate-50 px-3">
+      <div className="mb-4">
         <NumberInput label="Søfragt / w/m" value={state.seafreightUsdPerWm} onChange={(v) => set('seafreightUsdPerWm', v)} suffix="USD" />
         <NumberInput label="CAF (% af søfragt)" value={state.cafPct} onChange={(v) => set('cafPct', v)} suffix="%" step={0.1} />
         <NumberInput label="BAF / w/m" value={state.bafUsdPerWm} onChange={(v) => set('bafUsdPerWm', v)} suffix="USD" />
@@ -29,29 +30,22 @@ export function OfferLCL({ state, onChange, global }: Props) {
         <NumberInput label="Sendinger / måned" value={state.shipmentsPerMonth} onChange={(v) => set('shipmentsPerMonth', v)} suffix="stk" />
       </div>
 
-      <div className="mt-auto space-y-1 text-sm">
-        <Row label="Søfragt (pr. sending)" value={fmtUsd(b.seafreightUsd)} />
-        <Row label="+ CAF" value={fmtUsd(b.cafUsd)} />
-        <Row label="+ BAF" value={fmtUsd(b.bafUsd)} />
-        <Row label="Søfragt total" value={`${fmtUsd(b.usdSubtotal)} = ${fmtDkk2(b.usdSubtotalDkk)}`} bold />
-        <Row label="THC" value={fmtDkk2(b.thcDkk)} />
-        <Row label="Godsafgift havn" value={fmtDkk2(b.portDutyDkk)} />
-        <Row label="Kostpris pr. sending" value={fmtDkk2(b.costPricePerShipmentDkk)} bold />
-        <Row label={`× ${b.shipmentsPerMonth} sendinger/md (${b.totalVolumeCbm} cbm)`} value={fmtDkk(b.costPriceMonthDkk)} bold />
-        <Row label={`LEA avance (${global.marginPct}%)`} value={fmtDkk(b.marginDkk)} />
-        <div className="my-1 border-t border-slate-200" />
-        <Row label="Total pr. måned" value={fmtDkk(b.totalDkk)} big />
-        <Row label="Pris pr. cbm" value={fmtDkk2(b.dkkPerCbm)} muted />
+      <div className="mt-4 border-t-2 border-ink pt-2">
+        <LedgerRow label="Søfragt pr. sending" value={fmtUsd(b.seafreightUsd)} />
+        <LedgerRow label="+ CAF" value={fmtUsd(b.cafUsd)} />
+        <LedgerRow label="+ BAF" value={fmtUsd(b.bafUsd)} />
+        <LedgerRow label="Søfragt total" value={fmtDkk2(b.usdSubtotalDkk)} weight="subtotal" />
+        <LedgerRow label="THC" value={fmtDkk2(b.thcDkk)} />
+        <LedgerRow label="Godsafgift havn" value={fmtDkk2(b.portDutyDkk)} />
+        <LedgerRow label="Kostpris pr. sending" value={fmtDkk2(b.costPricePerShipmentDkk)} weight="subtotal" />
+        <LedgerRow label={`× ${b.shipmentsPerMonth} sendinger (${b.totalVolumeCbm} cbm/md)`} value={fmtDkk(b.costPriceMonthDkk)} weight="subtotal" />
+        <LedgerRow label={`LEA avance (${global.marginPct}%)`} value={fmtDkk(b.marginDkk)} />
+        <div className="mt-2 flex items-baseline justify-between border-t-2 border-ink pt-2">
+          <span className="font-display text-sm font-semibold tracking-wide text-ink">Total / md</span>
+          <span className="font-display text-2xl font-bold text-rust">{fmtDkk(b.totalDkk)}</span>
+        </div>
+        <LedgerRow label="Pris pr. cbm" value={fmtDkk2(b.dkkPerCbm)} weight="quiet" />
       </div>
-    </div>
-  )
-}
-
-function Row({ label, value, bold, big, muted }: { label: string; value: string; bold?: boolean; big?: boolean; muted?: boolean }) {
-  return (
-    <div className={`flex items-center justify-between gap-2 ${big ? 'text-base font-bold text-blue-700' : bold ? 'font-medium text-slate-700' : muted ? 'text-xs text-slate-400' : 'text-slate-600'}`}>
-      <span>{label}</span>
-      <span className="tabular-nums">{value}</span>
     </div>
   )
 }
