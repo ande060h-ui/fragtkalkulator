@@ -1,3 +1,5 @@
+> **Hører til opgave:** Del 2 · Opgave 2 — AI-optimér valg af søtransport og containerløsning (Distribution & SCM, 3. semester, UCL). Case: Sea Birgers Møbler.
+
 # Fragtkalkulator – Birgers Møbler
 
 Dynamisk beregningsværktøj til fragtkalkulation (Distribution & SCM). Sammenligner 3 søfragttilbud fra A-Line for kunden Birgers Møbler (Viborg → San Francisco), og beregner totalprisen i DKK inkl. speditørens (LEA Express) avance.
